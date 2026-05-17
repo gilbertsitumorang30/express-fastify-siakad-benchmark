@@ -1,0 +1,8 @@
+POST http://localhost:3000/api/course-registration/submit
+Content-Type: application/json
+
+{
+  "student_id": 1,
+  "academic_term": "2025-1",
+  "course_ids": [1, 2, 3, 4, 5]
+}
