@@ -8,7 +8,6 @@ echo "Running Express POST 10 VU Test..."
 
 VUS=10 DURATION=1m BASE_URL=$BASE_URL \
 k6 run ../registration_test.js \
---summary-export=../results/express_post_10vu.json \
---no-progress | tee ../results/express_post_10vu.txt
+--summary-export=../results/express_post_10vu.json
 
 echo "Test completed."
