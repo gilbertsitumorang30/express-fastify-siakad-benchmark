@@ -1,6 +1,6 @@
 #!/bin/bash
 
-vusList=(10 50 100 250 500 1000)
+vusList=(10 50 100 200)
 
 for vus in "${vusList[@]}"
 do

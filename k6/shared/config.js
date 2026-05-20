@@ -1,4 +1,4 @@
 export const TEST_CONFIG = {
-  vus: 10,
-  duration: "30s",
+  vus: __ENV.VUS ? parseInt(__ENV.VUS) : 10,
+  duration: __ENV.DURATION || "30s",
 };
