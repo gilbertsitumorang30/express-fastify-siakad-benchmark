@@ -28,7 +28,7 @@ export default function () {
   };
 
   const response = http.post(
-    "http://localhost:3001/api/course-registration/submit",
+    `${TEST_CONFIG.baseUrl}/api/course-registration/submit`,
 
     payload,
 
