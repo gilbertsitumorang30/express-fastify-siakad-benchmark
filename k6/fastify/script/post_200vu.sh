@@ -1,5 +1,7 @@
 #!/bin/bash
 
+RUN=$1
+
 source ../../fastify.env
 
 mkdir -p ../results

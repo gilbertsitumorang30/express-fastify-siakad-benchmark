@@ -1,5 +1,7 @@
 #!/bin/bash
 
+RUN=$1
+
 source ../../express.env
 
 mkdir -p ../results
