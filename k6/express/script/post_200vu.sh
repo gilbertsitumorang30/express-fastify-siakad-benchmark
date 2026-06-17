@@ -6,8 +6,8 @@ mkdir -p ../results
 
 echo "Running Express POST 200 VU Test..."
 
-VUS=200 DURATION=1m BASE_URL=$BASE_URL \
+VUS=200 DURATION=3m BASE_URL=$BASE_URL \
 k6 run ../registration_test.js \
---summary-export=../results/express_post_200vu.json
+--summary-export="../results/express_post_200vu_${RUN}.json"
 
 echo "Test completed."
