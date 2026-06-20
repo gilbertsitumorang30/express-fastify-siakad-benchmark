@@ -7,18 +7,16 @@ echo "FASTIFY BENCHMARK"
 echo "========================================="
 
 #
-
-# WARM UP
-
+# WARM UP (HANYA SEKALI)
 #
 
 echo ""
 echo "WARM-UP 30 DETIK"
 echo ""
 
-source ./fastify.env
+source ../fastify.env
 
-VUS=5 DURATION=30s BASE_URL=$BASE_URL 
+VUS=5 DURATION=30s BASE_URL=$BASE_URL \
 k6 run ./grades_test.js > /dev/null 2>&1
 
 echo "Warm-up selesai"
@@ -27,47 +25,46 @@ sleep 30
 
 run_scenario() {
 
-```
-ENDPOINT=$1
-VU=$2
-SCRIPT=$3
-
-echo ""
-echo "========================================="
-echo "$ENDPOINT - $VU VU"
-echo "========================================="
-
-for RUN in 1 2 3
-do
+    ENDPOINT=$1
+    VU=$2
+    SCRIPT=$3
 
     echo ""
-    echo "RUN $RUN"
+    echo "========================================="
+    echo "$ENDPOINT - $VU VU"
+    echo "========================================="
 
-    START=$(date '+%F %T')
+    for RUN in 1 2 3
+    do
 
-    ./script/$SCRIPT $RUN
+        echo ""
+        echo "RUN $RUN"
 
-    END=$(date '+%F %T')
+        START=$(date '+%F %T')
 
-    echo "Fastify,$ENDPOINT,$VU,$RUN,$START,$END" >> $CSV_FILE
+        (
+            cd script
+            ./$SCRIPT $RUN
+        )
 
-    echo "Start : $START"
-    echo "End   : $END"
+        END=$(date '+%F %T')
 
-    if [ "$RUN" -lt 3 ]; then
-        echo "Cooling down 60 detik..."
-        sleep 60
-    fi
+        echo "Fastify,$ENDPOINT,$VU,$RUN,$START,$END" >> "$CSV_FILE"
 
-done
-```
+        echo "Start : $START"
+        echo "End   : $END"
 
+        if [ "$RUN" -lt 3 ]; then
+            echo ""
+            echo "Cooling down 60 detik..."
+            sleep 60
+        fi
+
+    done
 }
 
 #
-
 # GET TEST
-
 #
 
 run_scenario GET_GRADES 10 get_10vu.sh
@@ -76,9 +73,7 @@ run_scenario GET_GRADES 100 get_100vu.sh
 run_scenario GET_GRADES 200 get_200vu.sh
 
 #
-
 # POST TEST
-
 #
 
 run_scenario POST_REGISTRATION 10 post_10vu.sh
