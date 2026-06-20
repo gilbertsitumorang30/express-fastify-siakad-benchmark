@@ -2,11 +2,6 @@
 
 CSV_FILE="./benchmark_log.csv"
 
-#
-# Reset benchmark log
-#
-echo "framework,endpoint,vu,run,start,end" > "$CSV_FILE"
-
 echo "========================================="
 echo "EXPRESS BENCHMARK"
 echo "========================================="
@@ -15,6 +10,33 @@ echo "========================================="
 # Load Environment
 #
 source ../express.env
+
+#
+# Reset Database Function
+#
+reset_database() {
+
+    echo ""
+    echo "========================================="
+    echo "RESET DATABASE"
+    echo "========================================="
+
+    (
+        cd ../data
+        node generate_data.js
+    )
+
+    STATUS=$?
+
+    if [ $STATUS -ne 0 ]; then
+        echo ""
+        echo "Reset database gagal"
+        exit 1
+    fi
+
+    echo "Reset database selesai"
+
+}
 
 #
 # Warm Up
@@ -31,9 +53,6 @@ echo "Warm-up selesai"
 echo "Menunggu 30 detik..."
 sleep 30
 
-#
-# Function Benchmark
-#
 run_scenario() {
 
     ENDPOINT=$1
@@ -51,6 +70,14 @@ run_scenario() {
         echo ""
         echo "RUN $RUN"
 
+        #
+        # Reset Database
+        #
+        reset_database
+
+        echo "Menunggu 30 detik setelah reset..."
+        sleep 30
+
         START=$(date '+%F %T')
 
         (
@@ -62,7 +89,7 @@ run_scenario() {
 
         if [ $STATUS -ne 0 ]; then
             echo ""
-            echo "❌ Benchmark gagal pada:"
+            echo "Benchmark gagal"
             echo "Endpoint : $ENDPOINT"
             echo "VU       : $VU"
             echo "Run      : $RUN"
@@ -96,7 +123,7 @@ run_scenario() {
 }
 
 #
-# GET
+# GET TEST
 #
 run_scenario GET_GRADES 10 get_10vu.sh
 run_scenario GET_GRADES 50 get_50vu.sh
@@ -104,7 +131,7 @@ run_scenario GET_GRADES 100 get_100vu.sh
 run_scenario GET_GRADES 200 get_200vu.sh
 
 #
-# POST
+# POST TEST
 #
 run_scenario POST_REGISTRATION 10 post_10vu.sh
 run_scenario POST_REGISTRATION 50 post_50vu.sh
