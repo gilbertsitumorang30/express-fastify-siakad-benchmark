@@ -46,7 +46,12 @@ run_scenario() {
             cd script
             ./$SCRIPT $RUN
         )
-
+        
+        if [ $? -ne 0 ]; then
+            echo "Benchmark gagal"
+            exit 1
+        fi
+        
         END=$(date '+%F %T')
 
         echo "Fastify,$ENDPOINT,$VU,$RUN,$START,$END" >> "$CSV_FILE"

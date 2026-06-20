@@ -47,6 +47,11 @@ run_scenario() {
             ./$SCRIPT $RUN
         )
 
+        if [ $? -ne 0 ]; then
+            echo "Benchmark gagal"
+            exit 1
+        fi
+
         END=$(date '+%F %T')
 
         echo "Express,$ENDPOINT,$VU,$RUN,$START,$END" >> "$CSV_FILE"
