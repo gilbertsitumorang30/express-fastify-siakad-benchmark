@@ -2,19 +2,27 @@
 
 CSV_FILE="./benchmark_log.csv"
 
+#
+# Reset benchmark log
+#
+echo "framework,endpoint,vu,run,start,end" > "$CSV_FILE"
+
 echo "========================================="
 echo "EXPRESS BENCHMARK"
 echo "========================================="
 
 #
-# WARM UP (HANYA SEKALI)
+# Load Environment
 #
-
-echo ""
-echo "WARM-UP 30 DETIK"
-echo ""
-
 source ../express.env
+
+#
+# Warm Up
+#
+echo ""
+echo "========================================="
+echo "WARM-UP 30 DETIK"
+echo "========================================="
 
 VUS=5 DURATION=30s BASE_URL=$BASE_URL \
 k6 run ./grades_test.js > /dev/null 2>&1
@@ -23,6 +31,9 @@ echo "Warm-up selesai"
 echo "Menunggu 30 detik..."
 sleep 30
 
+#
+# Function Benchmark
+#
 run_scenario() {
 
     ENDPOINT=$1
@@ -47,8 +58,14 @@ run_scenario() {
             ./$SCRIPT $RUN
         )
 
-        if [ $? -ne 0 ]; then
-            echo "Benchmark gagal"
+        STATUS=$?
+
+        if [ $STATUS -ne 0 ]; then
+            echo ""
+            echo "❌ Benchmark gagal pada:"
+            echo "Endpoint : $ENDPOINT"
+            echo "VU       : $VU"
+            echo "Run      : $RUN"
             exit 1
         fi
 
@@ -59,28 +76,36 @@ run_scenario() {
         echo "Start : $START"
         echo "End   : $END"
 
+        #
+        # Cooldown antar run
+        #
         if [ "$RUN" -lt 3 ]; then
             echo ""
-            echo "Cooling down 60 detik..."
+            echo "Cooling down antar run (60 detik)..."
             sleep 60
         fi
 
     done
+
+    #
+    # Cooldown antar skenario
+    #
+    echo ""
+    echo "Cooling down antar skenario (120 detik)..."
+    sleep 120
 }
 
 #
-# GET TEST
+# GET
 #
-
 run_scenario GET_GRADES 10 get_10vu.sh
 run_scenario GET_GRADES 50 get_50vu.sh
 run_scenario GET_GRADES 100 get_100vu.sh
 run_scenario GET_GRADES 200 get_200vu.sh
 
 #
-# POST TEST
+# POST
 #
-
 run_scenario POST_REGISTRATION 10 post_10vu.sh
 run_scenario POST_REGISTRATION 50 post_50vu.sh
 run_scenario POST_REGISTRATION 100 post_100vu.sh
