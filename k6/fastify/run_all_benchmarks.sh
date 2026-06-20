@@ -3,13 +3,40 @@
 CSV_FILE="./benchmark_log.csv"
 
 echo "========================================="
-echo "EXPRESS BENCHMARK"
+echo "FASTIFY BENCHMARK"
 echo "========================================="
 
 #
 # Load Environment
 #
-source ../express.env
+source ../fastify.env
+
+#
+# Reset Database Function
+#
+reset_database() {
+
+    echo ""
+    echo "========================================="
+    echo "RESET DATABASE"
+    echo "========================================="
+
+    (
+        cd ../../data
+        node generate_data.js
+    )
+
+    STATUS=$?
+
+    if [ $STATUS -ne 0 ]; then
+        echo ""
+        echo "Reset database gagal"
+        exit 1
+    fi
+
+    echo "Reset database selesai"
+
+}
 
 #
 # Warm Up
@@ -43,6 +70,14 @@ run_scenario() {
         echo ""
         echo "RUN $RUN"
 
+        #
+        # Reset Database
+        #
+        reset_database
+
+        echo "Menunggu 30 detik setelah reset..."
+        sleep 30
+
         START=$(date '+%F %T')
 
         (
@@ -63,7 +98,7 @@ run_scenario() {
 
         END=$(date '+%F %T')
 
-        echo "Express,$ENDPOINT,$VU,$RUN,$START,$END" >> "$CSV_FILE"
+        echo "Fastify,$ENDPOINT,$VU,$RUN,$START,$END" >> "$CSV_FILE"
 
         echo "Start : $START"
         echo "End   : $END"
